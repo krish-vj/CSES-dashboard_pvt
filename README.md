@@ -26,3 +26,14 @@ I am planning a dedicated, full-page dashboard with the following features:
 ---
 
 ## 📸 Screenshots
+
+### Original CSES Problemset Website
+This shows the standard navigation bar of the original CSES problemset website before the dashboard extension is applied.
+
+![Original Website](https://github.com/krish-vj/CSES-DASHBOARD/blob/main/Screenshots/orignal.jpg)
+
+### New Navigation Button: Added to Nav Bar
+![New Button View 1](https://github.com/krish-vj/CSES-DASHBOARD/blob/main/Screenshots/new1.jpg)
+
+### Dashboard View: Quick Access
+![Dashboard View](https://github.com/krish-vj/CSES-DASHBOARD/blob/main/Screenshots/new2.jpg)
