@@ -4,7 +4,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import SearchButton from './SearchButton.tsx';
 
-console.log("Ramen Finder Content Script Loaded!");
+console.log("item Finder Content Script Loaded!");
 console.log("finding if we have logged in or not?")
 
 const currUrl = window.location.href;
@@ -68,7 +68,7 @@ if (targetUl) {
 
   // Create a new <li> element
   const listItem = document.createElement('li');
-  listItem.id = 'ramen-finder-root'; // Give it a unique ID for React to mount to
+  listItem.id = 'item-finder-root'; // Give it a unique ID for React to mount to
 
 
   // Append the <li> to the <ul>
