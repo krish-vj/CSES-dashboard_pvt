@@ -59,7 +59,10 @@ if (need && login && login.innerHTML==='Login' &&'click' in login){
 }
 // Find the target <ul> with class "nav"
 
-if (window.location.href.startsWith('https://cses.fi/problemset/')){
+if (window.location.href.startsWith('https://cses.fi/problemset/') && 
+!window.location.href.startsWith('https://cses.fi/problemset/result') &&
+!window.location.href.startsWith('https://cses.fi/problemset/task/')
+){
   console.log("we are inside the problem set");
 const targetUl = document.querySelector('ul.nav');
 
