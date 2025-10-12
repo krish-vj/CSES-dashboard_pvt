@@ -58,7 +58,7 @@ if (need && login && login.innerHTML==='Login' &&'click' in login){
   console.log("redirected");
 }
 // Find the target <ul> with class "nav"
-
+//maybe we should do regex instead but for now we'll let this one stay
 if (window.location.href.startsWith('https://cses.fi/problemset/') && 
 !window.location.href.startsWith('https://cses.fi/problemset/result') &&
 !window.location.href.startsWith('https://cses.fi/problemset/task/')
