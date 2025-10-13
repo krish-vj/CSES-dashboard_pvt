@@ -5,6 +5,7 @@ function App() {
   
   return (
     <>
+
     <h1 style={{fontSize: '30px'}}>CSES EXTENSION</h1>
     <hr />
       <div>Adds a MYSTATS button in navigation bar for problemset</div>    
@@ -14,9 +15,10 @@ function App() {
       <button onClick={()=>{ document.getElementById('form')!.style.display='block'}}>Setup</button>
       <h3><div id='msg2'></div></h3>
       <div id='form' style={{display:'none'}}>
-      <label htmlFor="username">Username: </label>
+        <fieldset>
+      <label htmlFor="username" style={{display: 'inline-block',width: '60px'}}>Username: </label>
       <input type="text" id='username' name='username'/> <br />
-      <label htmlFor="pwd">Password: </label>
+      <label htmlFor="pwd" style={{display: 'inline-block', width: '60px'}}>Password:</label>
       <input type="text" id='pwd' name='pwd'/> <br />
       <hr />
       <label htmlFor="mode">Mode:  </label>
@@ -43,7 +45,7 @@ function App() {
             document.getElementById('form')!.style.display='none';
             document.getElementById('msg2')!.innerText= message2;
       }}
-      >Submit</button></div>
+      >Submit</button> </fieldset></div>
     </>
   )
 }

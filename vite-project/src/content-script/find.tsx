@@ -15,8 +15,7 @@ if (currUrl === loginUrl) {
     console.log("we are on login Page!");
     need=false;
     // Retrieve credentials asynchronously
-    chrome.storage.local.get(['username', 'pwd', 'mode']).then((items) => {
-      
+    chrome.storage.local.get(['username', 'pwd', 'mode']).then((items) => {   
         const myUsername = items.username;
         const myPws = items.pwd;
         const mode= items.mode;
@@ -24,8 +23,6 @@ if (currUrl === loginUrl) {
         if (mode==='d' && document.body.style.backgroundColor.toString()!= darkcolor){
           const modebtn= document.querySelector('a[href="/darkmode"]');
           (modebtn as HTMLAnchorElement)!.click();
-          
-
         }
         console.log("username from extension storage: " + myUsername);
         console.log("pwd from extension storage: " + myPws);
