@@ -1,39 +1,88 @@
-# CSES Problemset Dashboard
+# 🧩 CSES Problemset Dashboard
 
-A custom dashboard for tracking and visualizing progress on the [CSES Problemset](https://cses.fi/problemset/).
+A custom Chrome extension for tracking and visualizing progress on the [CSES Problemset](https://cses.fi/problemset/).
+Now with **automatic login** and **dark/light mode selection** for a smoother experience!
 
 ---
 
 ## 🚀 Current MVP Features
 
-The initial version of the dashboard provides core metrics to quickly assess progress:
+The dashboard provides a quick and insightful overview of your progress on CSES:
 
-1.  **Successfully Solved:** The total count of problems/tasks that have a correct and accepted solution.
-2.  **Attempted (Failed):** The number of problems/tasks that have been attempted but not yet successfully solved.
-3.  **Total Problems:** The total number of problems available in the CSES Problemset.
+1. **Successfully Solved:** Total count of problems with accepted solutions.
+2. **Attempted (Failed):** Problems that were tried but not yet solved.
+3. **Total Problems:** Total number of available problems in the CSES Problemset.
+4. **🔐 Automatic Login:**
+
+   * Stores your username and password securely in Chrome’s **local storage**.
+   * Automatically logs you in whenever CSES logs you out (since its cookies expire quickly).
+5. **🌓 Dark/Light Mode Selection:**
+
+   * Choose your preferred theme directly from the dashboard.
+   * Your preference is remembered automatically.
 
 ---
 
 ## ✨ Future Plans & Enhancements
 
-I am planning a dedicated, full-page dashboard with the following features:
+Planned updates to make the dashboard more powerful and beautiful:
 
-* **Progress Heatmap:** A visual representation (e.g., a calendar or grid) to show solving activity over time.
-* **Improved UI/UX:** A modern, beautiful, and intuitive user interface.
-* **Local Caching:** Storing problem data and user statistics locally for faster load times and offline viewing.
-* **Custom Problem Lists:** Functionality to create and manage various lists, such as **Favorites**, **Revisit** for challenging problems, **To-Do** lists, and more.
+* **Progress Heatmap:** Visualize your solving activity over time.
+* **Improved UI/UX:** A modern, elegant interface with smooth animations.
+* **Local Caching:** Store problem data and statistics for faster loading and offline access.
+* **Custom Problem Lists:** Create personalized lists such as:
+
+  * ⭐ **Favorites**
+  * 🔁 **Revisit (Challenging Problems)**
+  * 📋 **To-Do**
 
 ---
 
 ## 📸 Screenshots
 
-### Original CSES Problemset Website
-This shows the standard navigation bar of the original CSES problemset website before the dashboard extension is applied.
+### 🔑 Automatic Login Page
 
+![Auth Page](https://github.com/krish-vj/CSES-DASHBOARD/blob/main/Screenshots/auth.jpeg)
+
+### 🧭 Original CSES Problemset Website
+
+Shows the standard navigation bar before the dashboard extension is applied.
 ![Original Website](https://github.com/krish-vj/CSES-DASHBOARD/blob/main/Screenshots/orignal.jpg)
 
-### New Navigation Button: Added to Nav Bar
+### ➕ New Navigation Button
+
+A new button added to the navigation bar for quick access to your dashboard.
 ![New Button View 1](https://github.com/krish-vj/CSES-DASHBOARD/blob/main/Screenshots/new1.jpg)
 
-### Dashboard View: Quick Access
+### 📊 Dashboard View
+
+Displays total problems solved, attempted, and available at a glance.
 ![Dashboard View](https://github.com/krish-vj/CSES-DASHBOARD/blob/main/Screenshots/new2.jpg)
+
+---
+
+## ⚙️ Quick Setup Guide (Beginner-Friendly)
+
+Follow these simple steps to install and start using the extension:
+
+1. **Download the ZIP file** from this repository (`cses-dashboard.zip`).
+2. **Extract** the ZIP file anywhere on your computer.
+3. Open **Google Chrome** and go to:
+
+   ```
+   chrome://extensions/
+   ```
+4. Turn on **Developer mode** (top-right corner).
+5. Click **Load unpacked**.
+6. Select the **folder you just extracted**.
+7. That’s it! 🎉
+   You’ll see the **CSES Dashboard icon** appear in your Chrome toolbar.
+
+---
+
+## 🧠 Notes
+
+* Your CSES credentials are stored **locally on your computer**, never sent elsewhere.
+* If you ever log out manually, the extension will re-authenticate automatically on your next visit.
+* Feedback, feature ideas, and pull requests are always welcome!
+
