@@ -56,32 +56,58 @@ if (need && login && login.innerHTML==='Login' &&'click' in login){
 }
 // Find the target <ul> with class "nav"
 //maybe we should do regex instead but for now we'll let this one stay
-if (window.location.href.startsWith('https://cses.fi/problemset/') && 
-!window.location.href.startsWith('https://cses.fi/problemset/result') &&
-!window.location.href.startsWith('https://cses.fi/problemset/task/')
+if (window.location.href ==='https://cses.fi/problemset/list' ||
+   window.location.href ==='https://cses.fi/problemset/list/' ||
+   window.location.href ==='https://cses.fi/problemset/' ||
+   window.location.href ==='https://cses.fi/problemset' 
 ){
-  console.log("we are inside the problem set");
-const targetUl = document.querySelector('ul.nav');
-
+  console.log(window.location.href);
+  const targetUl = document.querySelector('ul.nav');
 if (targetUl) {
   console.log("Target <ul>.nav found, injecting React button.");
 
-  // Create a new <li> element
   const listItem = document.createElement('li');
   listItem.id = 'item-finder-root'; // Give it a unique ID for React to mount to
 
-
-  // Append the <li> to the <ul>
   targetUl.appendChild(listItem);
 
-  // Mount the React component into the <li>
   const root = createRoot(listItem);
   root.render(
     <React.StrictMode>
       <SearchButton />
     </React.StrictMode>
   );
-} else {
-  console.warn("Target <ul> with class 'nav' not found on this page. Button not injected.");
 } 
+}
+
+//logic for copy button 
+if (window.location.href.startsWith('https://cses.fi/problemset/task/')) {
+  let allps= document.getElementsByTagName('p');
+  for (const curr of allps){
+    if (curr.innerText === 'Input:' || 
+      curr.innerText === 'Output:'){
+        curr.style.display= 'inline-block';
+    }
+  }
+  document.querySelectorAll('pre').forEach((pre) => {
+    const btn = document.createElement('button');
+
+    btn.textContent = 'copy';
+    btn.style.padding = '0.3em 0.6em';
+    btn.style.width = 'fit-content';
+    btn.style.fontSize = '0.8em';
+    btn.style.height='fit-content';
+
+    btn.addEventListener('click', () => {
+      navigator.clipboard.writeText(pre.innerText)
+        .then(() => {
+          btn.textContent = 'copied!';
+          setTimeout(() => btn.textContent = 'copy', 2500);
+        })
+        .catch(err => {console.error('copy failed:', err); alert("error: "+err);});
+    });
+
+    pre.insertAdjacentElement('beforebegin', btn);
+  });
+
 }
