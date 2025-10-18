@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 interface Settings {
   tagsEnabled: boolean;
   timeEnabled: boolean;
+  notesEnabled: boolean;
   hintsEnabled: boolean;
   globalStatsEnabled: boolean;
   categoryStatsEnabled: boolean;
@@ -24,6 +25,7 @@ function App() {
   const [settings, setSettings] = useState<Settings>({
     tagsEnabled: true,
     timeEnabled: true,
+    notesEnabled: true,
     hintsEnabled: true,
     globalStatsEnabled: true,
     categoryStatsEnabled: true,
@@ -53,7 +55,7 @@ function App() {
     // Check if chrome.storage is available
     if (chrome.storage && chrome.storage.local) {
       const settingKeys = [
-        'tagsEnabled','timeEnabled', 'hintsEnabled', 'globalStatsEnabled',
+        'tagsEnabled','timeEnabled', 'notesEnabled','hintsEnabled', 'globalStatsEnabled',
         'categoryStatsEnabled', 'sortEnabled', 'autoLoginEnabled',
         'autoModeEnabled', 'submitByTextEnabled', 'username', 'pwd', 'mode'
       ];
@@ -61,6 +63,7 @@ function App() {
         setSettings({
           tagsEnabled: items.tagsEnabled ?? true,
           timeEnabled: items.timeEnabled?? true,
+          notesEnabled: items.notesEnabled?? true,
           hintsEnabled: items.hintsEnabled ?? true,
           globalStatsEnabled: items.globalStatsEnabled ?? true,
           categoryStatsEnabled: items.categoryStatsEnabled ?? true,
@@ -166,6 +169,8 @@ function App() {
             {message}
           </div>
         )}
+        <pre>note: you need to refresh
+                   to see the changes</pre>
         
         {/* Automation Section */}
         <div style={{ background: '#242424', borderRadius: '12px', padding: '24px', marginBottom: '24px' }}>
@@ -173,7 +178,7 @@ function App() {
             Automation
           </h2>
           <ToggleItem label="Auto Login" description="Automatically log in with saved credentials" checked={settings.autoLoginEnabled} onChange={() => handleToggle('autoLoginEnabled')} />
-          <ToggleItem label="Auto Mode" description="Automatically switch to preferred theme mode" checked={settings.autoModeEnabled} onChange={() => handleToggle('autoModeEnabled')} isLast />
+          <ToggleItem label="Auto Theme" description="Automatically switch to preferred theme mode" checked={settings.autoModeEnabled} onChange={() => handleToggle('autoModeEnabled')} isLast />
 
           {(settings.autoLoginEnabled || settings.autoModeEnabled) && (
             <div style={{ marginTop: '24px' }}>
@@ -182,7 +187,7 @@ function App() {
                   onClick={() => setShowLoginForm(true)}
                   style={{ padding: '8px 16px', background: '#3a3a3a', border: '1px solid #4a4a4a', borderRadius: '6px', color: '#e0e0e0', cursor: 'pointer', fontSize: '14px', transition: 'all 0.2s' }}
                 >
-                  {settings.username ? 'Update Credentials' : 'Setup Credentials'}
+                  {settings.username ? 'Update Credentials/Theme' : 'Setup Credentials/Theme'}
                 </button>
               ) : (
                 <div style={{ background: '#1a1a1a', border: '1px solid #3a3a3a', borderRadius: '8px', padding: '20px', marginTop: '12px' }}>
@@ -223,6 +228,7 @@ function App() {
           <h2 style={{ fontSize: '18px', fontWeight: '500', marginBottom: '20px', color: '#ffffff' }}>
             Features
           </h2>
+          <ToggleItem label="Notes" description="Save notes corresponding to each problem" checked={settings.notesEnabled} onChange={() => handleToggle('notesEnabled')} />
           <ToggleItem label="Time Complexity" description="Show expected time complexity for tasks" checked={settings.timeEnabled} onChange={() => handleToggle('timeEnabled')} />
           <ToggleItem label="Tags Display" description="Show problem tags" checked={settings.tagsEnabled} onChange={() => handleToggle('tagsEnabled')} />
           <ToggleItem label="Hints Display" description="Show problem hints" checked={settings.hintsEnabled} onChange={() => handleToggle('hintsEnabled')} />

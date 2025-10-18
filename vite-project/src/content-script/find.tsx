@@ -6,11 +6,13 @@ import SearchButton from './SearchButton.tsx';
 import { setupTextBoxSubmission } from './submitTextBox';
 import CategoryStatsButton from './CategoryStatsButton.tsx';
 import SortButton from './SortButton.tsx';
+import NotesModal from './NotesModal.tsx';
 
 // Define the shape of your settings for clarity and type safety
 interface Settings {
   tagsEnabled: boolean;
   timeEnabled: boolean;
+  notesEnabled: boolean;
   hintsEnabled: boolean;
   globalStatsEnabled: boolean;
   categoryStatsEnabled: boolean;
@@ -81,6 +83,7 @@ const loginUrl = 'https://cses.fi/login';
 const DEFAULT_SETTINGS: Settings = {
   tagsEnabled: true,
   timeEnabled: true,
+  notesEnabled: true,
   hintsEnabled: true,
   globalStatsEnabled: true,
   categoryStatsEnabled: true,
@@ -93,6 +96,93 @@ const DEFAULT_SETTINGS: Settings = {
   mode: 'd',
   
 };
+
+function addNotesIcons() {
+  // Find all task links
+  const taskLinks = document.querySelectorAll('a[href^="/problemset/task/"]');
+  
+  taskLinks.forEach((link) => {
+    const href = link.getAttribute('href');
+    if (!href) return;
+    
+    // Extract task ID from href
+    const taskId = href.replace('/problemset/task/', '');
+    const taskName = link.textContent?.trim() || 'Unknown Task';
+    
+    // Check if pencil icon already exists
+    const parent = link.parentElement;
+    if (!parent || parent.querySelector('.notes-icon-wrapper')) return;
+    
+    // Create wrapper for the icon
+    const iconWrapper = document.createElement('span');
+    iconWrapper.className = 'notes-icon-wrapper';
+    iconWrapper.style.marginLeft = '8px';
+    iconWrapper.style.display = 'inline-block';
+    iconWrapper.style.cursor = 'pointer';
+    iconWrapper.style.opacity = '0.6';
+    iconWrapper.style.transition = 'opacity 0.2s';
+    
+    // Create pencil icon (using unicode character)
+    iconWrapper.innerHTML = '✏️';
+    iconWrapper.title = 'Add/Edit notes';
+    
+    iconWrapper.addEventListener('mouseenter', () => {
+      iconWrapper.style.opacity = '1';
+    });
+    
+    iconWrapper.addEventListener('mouseleave', () => {
+      iconWrapper.style.opacity = '0.6';
+    });
+    
+    // Check if there are existing notes and show indicator
+    chrome.storage.local.get([`notes_${taskId}`]).then((result) => {
+      if (result[`notes_${taskId}`] && result[`notes_${taskId}`].trim()) {
+        iconWrapper.style.opacity = '1';
+        iconWrapper.style.filter = 'brightness(1.2)';
+      }
+    });
+    
+    iconWrapper.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      openNotesModal(taskId, taskName);
+    });
+    
+    // Insert after the link
+    link.insertAdjacentElement('afterend', iconWrapper);
+  });
+}
+
+function openNotesModal(taskId: string, taskName: string) {
+  // Create modal container if it doesn't exist
+  let modalContainer = document.getElementById('cses-notes-modal-root');
+  if (!modalContainer) {
+    modalContainer = document.createElement('div');
+    modalContainer.id = 'cses-notes-modal-root';
+    document.body.appendChild(modalContainer);
+  }
+  
+  // Create root and render modal
+  const root = createRoot(modalContainer);
+  
+  const handleClose = () => {
+    root.unmount();
+    // Re-add icons to update the indicator
+    addNotesIcons();
+  };
+  
+  root.render(
+    <React.StrictMode>
+      <NotesModal 
+        taskId={taskId} 
+        taskName={taskName} 
+        isOpen={true} 
+        onClose={handleClose} 
+      />
+    </React.StrictMode>
+  );
+}
+
 
 // Keys to fetch from storage
 const SETTING_KEYS = Object.keys(DEFAULT_SETTINGS) as (keyof Settings)[];
@@ -110,6 +200,7 @@ async function getSettings(): Promise<Settings> {
       return {
         tagsEnabled: items.tagsEnabled ?? DEFAULT_SETTINGS.tagsEnabled,
         timeEnabled: items.timeEnabled ?? DEFAULT_SETTINGS.timeEnabled,
+        notesEnabled: items.notesEnabled?? DEFAULT_SETTINGS.notesEnabled,
         hintsEnabled: items.hintsEnabled ?? DEFAULT_SETTINGS.hintsEnabled,
         globalStatsEnabled: items.globalStatsEnabled ?? DEFAULT_SETTINGS.globalStatsEnabled,
         categoryStatsEnabled: items.categoryStatsEnabled ?? DEFAULT_SETTINGS.categoryStatsEnabled,
@@ -184,13 +275,10 @@ async function main() {
   }
 
 if (settings.autoModeEnabled) {
-    // CSES dark mode color #181818 is rgb(24, 24, 24)
     const darkColorRgb = 'rgb(24, 24, 24)';
-    
-    // Get the *actual* rendered background color using window.getComputedStyle
+  
     const currentBgColor = window.getComputedStyle(document.body).backgroundColor;
     
-    // Check the actual rendered color
     const isCurrentlyDark = currentBgColor === darkColorRgb;
     const isDesiredDark = settings.mode === 'd';
 
@@ -235,9 +323,15 @@ if (settings.autoModeEnabled) {
     }
     
     // Inject Category Stats and Sort Buttons
-    if (settings.categoryStatsEnabled || settings.sortEnabled) {
+    if (settings.categoryStatsEnabled || settings.sortEnabled || settings.notesEnabled) {
       // Use a timeout to ensure all DOM elements are fully rendered/settled
       setTimeout(() => {
+
+    if (settings.notesEnabled){
+    addNotesIcons();}
+    
+
+
         const h2Elements = document.querySelectorAll('h2');
 
         h2Elements.forEach((h2, index) => {
@@ -287,9 +381,11 @@ if (settings.autoModeEnabled) {
             }
           }
         });
-      }, 500);
+      }, 250);
     }
   }
+
+
   const problemId=extractProblemId(currUrl);
   if (currUrl.startsWith('https://cses.fi/problemset/') && problemId) {
   const sidebar = document.querySelector('div.nav.sidebar');
@@ -321,52 +417,7 @@ if (settings.autoModeEnabled) {
     }
   }
 }
-  // if (settings.tagsEnabled && currUrl.startsWith('https://cses.fi/problemset/') ){
-  //   let sidebar= document.querySelector('div.nav.sidebar');
-  //   if (sidebar){
-  //     let tags=document.createElement('h4');
-  //     let child= document.createElement('div');
-  //     child.innerText='Will upload tags if there is suffiecient demand.'
-  //     tags.innerText='Tags';
-  //     const hr= document.createElement('hr');
-  //     sidebar.appendChild(hr);
-  //     sidebar.appendChild(tags);
-  //     sidebar.appendChild(child);
 
-      
-  //   }
-  // }
-  
-  // if (settings.hintsEnabled && currUrl.startsWith('https://cses.fi/problemset/')){
-  //   let sidebar= document.querySelector('div.nav.sidebar');
-  //       if (sidebar){
-  //     let hints=document.createElement('h4');
-  //     let child= document.createElement('div');
-  //     child.innerText='Will upload hints if there is suffiecient demand.'
-  //     hints.innerText='Hints';
-  //     const hr= document.createElement('hr');
-  //     sidebar.appendChild(hr);
-  //     sidebar.appendChild(hints);
-  //     sidebar.appendChild(child);
-
-      
-  //   }
-
-  // }
-  //   if (settings.timeEnabled && currUrl.startsWith('https://cses.fi/problemset/')){
-  //   let sidebar= document.querySelector('div.nav.sidebar');
-  //       if (sidebar){
-  //     let hints=document.createElement('h4');
-  //     let child= document.createElement('div');
-  //     child.innerText='Will upload time complexity if there is suffiecient demand.'
-  //     hints.innerText='Time Complexity';
-  //     const hr= document.createElement('hr');
-  //     sidebar.appendChild(hr);
-  //     sidebar.appendChild(hints);
-  //     sidebar.appendChild(child); 
-  //   }
-
-  // }
   // --- Copy Button Logic on Problem/Task Page ---
 
   if (currUrl.startsWith('https://cses.fi/problemset/task/')) {
