@@ -42,8 +42,7 @@ Planned updates to make the dashboard more powerful and beautiful:
 
 ### 🔑 Automatic Login Page
 
-![Auth Page](https://github.com/krish-vj/CSES-DASHBOARD/blob/main/Screenshots/auth.jpeg)
-
+![Auth Page](https://github.com/krish-vj/CSES-DASHBOARD/blob/main/Screenshots/auth.jpg)
 ### 🧭 Original CSES Problemset Website
 
 Shows the standard navigation bar before the dashboard extension is applied.
