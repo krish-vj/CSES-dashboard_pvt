@@ -4,8 +4,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import SearchButton from './SearchButton.tsx';
 import { setupTextBoxSubmission } from './submitTextBox';
-console.log("item Finder Content Script Loaded!");
-console.log("finding if we have logged in or not?")
+import CategoryStatsButton from './CategoryStatsButton.tsx';
 
 const currUrl = window.location.href;
 const loginUrl = 'https://cses.fi/login';
@@ -78,6 +77,52 @@ if (targetUl) {
     </React.StrictMode>
   );
 } 
+setTimeout(() => {
+    const h2Elements = document.querySelectorAll('h2');
+    
+    h2Elements.forEach((h2, index) => {
+      if (index!=0){
+      // Find the next task-list element after this h2
+      let nextElement = h2.nextElementSibling;
+      let taskList: Element | null = null;
+      
+      // Search for the ul.task-list that follows this h2
+      while (nextElement) {
+        if (nextElement.classList.contains('task-list')) {
+          taskList = nextElement;
+          break;
+        }
+        nextElement = nextElement.nextElementSibling;
+      }
+
+      if (taskList) {
+        // Make the h2 position relative so absolute positioning works inside it
+        (h2 as HTMLElement).style.position = 'relative';
+        
+        // Get the width of the task list to match it
+        const taskListWidth = (taskList as HTMLElement).offsetWidth;
+        (h2 as HTMLElement).style.width = `${taskListWidth}px`;
+        
+        // Create a span container for the React component
+        const statsContainer = document.createElement('span');
+        statsContainer.id = `category-stats-${index}`;
+        
+        // Append to the h2 element
+        h2.appendChild(statsContainer);
+
+        // Render the CategoryStatsButton
+        const categoryRoot = createRoot(statsContainer);
+        categoryRoot.render(
+          <React.StrictMode>
+            <CategoryStatsButton 
+              taskListElement={taskList}
+            />
+          </React.StrictMode>
+        );
+        
+      }}
+    });
+  }, 500);
 }
 
 //logic for copy button 
