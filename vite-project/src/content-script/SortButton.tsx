@@ -115,24 +115,15 @@ const SortButton: React.FC<SortButtonProps> = ({ taskListElement }) => {
           alignItems: 'center',
           justifyContent: 'center',
           padding: '4px 8px',
-          background: 'none',
           border: '1px solid #888',
           borderRadius: '4px',
-          color: '#888',
           cursor: 'pointer',
           fontSize: '0.85rem',
           fontWeight: 'normal',
           outline: 'none',
           transition: 'all 0.2s',
         }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.borderColor = '#5CAFFF';
-          e.currentTarget.style.color = '#5CAFFF';
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.borderColor = '#888';
-          e.currentTarget.style.color = '#888';
-        }}
+ 
         title="Sort problems"
       >
         Sort {getSortIcon()}
@@ -155,7 +146,6 @@ const SortButton: React.FC<SortButtonProps> = ({ taskListElement }) => {
               top: '100%',
               marginTop: '8px',
               width: '200px',
-              background: 'white',
               borderRadius: '6px',
               boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
               zIndex: 9999,
@@ -172,24 +162,13 @@ const SortButton: React.FC<SortButtonProps> = ({ taskListElement }) => {
                   alignItems: 'center',
                   gap: '10px',
                   padding: '10px 14px',
-                  background: sortType === 'default' ? '#eff6ff' : 'white',
                   border: 'none',
-                  color: sortType === 'default' ? '#1d4ed8' : '#374151',
                   cursor: 'pointer',
                   fontSize: '13px',
                   textAlign: 'left',
                   fontWeight: sortType === 'default' ? 500 : 400,
                 }}
-                onMouseEnter={(e) => {
-                  if (sortType !== 'default') {
-                    e.currentTarget.style.background = '#f3f4f6';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (sortType !== 'default') {
-                    e.currentTarget.style.background = 'white';
-                  }
-                }}
+                
               >
                 <span style={{ fontSize: '16px' }}>#</span>
                 <span>Default Order</span>
@@ -203,24 +182,13 @@ const SortButton: React.FC<SortButtonProps> = ({ taskListElement }) => {
                   alignItems: 'center',
                   gap: '10px',
                   padding: '10px 14px',
-                  background: sortType === 'solvers' ? '#eff6ff' : 'white',
                   border: 'none',
-                  color: sortType === 'solvers' ? '#1d4ed8' : '#374151',
                   cursor: 'pointer',
                   fontSize: '13px',
                   textAlign: 'left',
                   fontWeight: sortType === 'solvers' ? 500 : 400,
                 }}
-                onMouseEnter={(e) => {
-                  if (sortType !== 'solvers') {
-                    e.currentTarget.style.background = '#f3f4f6';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (sortType !== 'solvers') {
-                    e.currentTarget.style.background = 'white';
-                  }
-                }}
+
               >
                 <span style={{ fontSize: '16px' }}>👥</span>
                 <span>Number of Solvers</span>
@@ -234,24 +202,13 @@ const SortButton: React.FC<SortButtonProps> = ({ taskListElement }) => {
                   alignItems: 'center',
                   gap: '10px',
                   padding: '10px 14px',
-                  background: sortType === 'percentage' ? '#eff6ff' : 'white',
                   border: 'none',
-                  color: sortType === 'percentage' ? '#1d4ed8' : '#374151',
                   cursor: 'pointer',
                   fontSize: '13px',
                   textAlign: 'left',
                   fontWeight: sortType === 'percentage' ? 500 : 400,
                 }}
-                onMouseEnter={(e) => {
-                  if (sortType !== 'percentage') {
-                    e.currentTarget.style.background = '#f3f4f6';
-                  }
-                }}
-                onMouseLeave={(e) => {
-                  if (sortType !== 'percentage') {
-                    e.currentTarget.style.background = 'white';
-                  }
-                }}
+
               >
                 <span style={{ fontSize: '16px' }}>%</span>
                 <span>Acceptance Rate</span>

@@ -7,204 +7,285 @@ import { setupTextBoxSubmission } from './submitTextBox';
 import CategoryStatsButton from './CategoryStatsButton.tsx';
 import SortButton from './SortButton.tsx';
 
+// Define the shape of your settings for clarity and type safety
+interface Settings {
+  tagsEnabled: boolean;
+  hintsEnabled: boolean;
+  globalStatsEnabled: boolean;
+  categoryStatsEnabled: boolean;
+  sortEnabled: boolean;
+  autoLoginEnabled: boolean;
+  autoModeEnabled: boolean;
+  submitByTextEnabled: boolean;
+  username: string;
+  pwd: string;
+  mode: string;
+}
+
 const currUrl = window.location.href;
 const loginUrl = 'https://cses.fi/login';
-let need= true;
-const darkcolor= '#181818';
-if (currUrl === loginUrl) {
-    console.log("we are on login Page!");
-    need=false;
-    // Retrieve credentials asynchronously
-    chrome.storage.local.get(['username', 'pwd', 'mode']).then((items) => {   
-        const myUsername = items.username;
-        const myPws = items.pwd;
-        const mode= items.mode;
-        console.log(document.body.style.backgroundColor.toString());
-        if (mode==='d' && document.body.style.backgroundColor.toString()!= darkcolor){
-          const modebtn= document.querySelector('a[href="/darkmode"]');
-          (modebtn as HTMLAnchorElement)!.click();
-        }
-        console.log("username from extension storage: " + myUsername);
-        console.log("pwd from extension storage: " + myPws);
+const darkcolor = '#181818';
 
-        const username = document.getElementById('nick');
-        const pwd = document.querySelector('input[name="pass"]');
+// Default settings based on your initial storage setup, for fallback
+const DEFAULT_SETTINGS: Settings = {
+  tagsEnabled: true,
+  hintsEnabled: true,
+  globalStatsEnabled: true,
+  categoryStatsEnabled: true,
+  sortEnabled: true,
+  autoLoginEnabled: false,
+  autoModeEnabled: false,
+  submitByTextEnabled: true,
+  username: '',
+  pwd: '',
+  mode: 'd',
+};
 
-        if (username && pwd && myUsername && myPws && 'value' in username) {
-            (username as HTMLInputElement).value = myUsername;
-            (pwd as HTMLInputElement).value = myPws;
-            
-            console.log("submitting the username and password");
-            const submitbtn = document.querySelector('input[type="submit"]');
-            
-            if (submitbtn && 'click' in submitbtn) {
-                // Ensure you only click after setting the values
-                (submitbtn as HTMLElement).click();
-            }
-        }
-    }).catch(error => {
-        console.error("Error retrieving from storage:", error);
-    });
-}
+// Keys to fetch from storage
+const SETTING_KEYS = Object.keys(DEFAULT_SETTINGS) as (keyof Settings)[];
 
-const login= document.querySelector('a[href="/login"]');
-if (need && login && login.innerHTML==='Login' &&'click' in login){
-  console.log("we have not logged in yet!");
-  need=false;
-  (login as HTMLElement).click();
-  console.log("redirected");
-}
-// Find the target <ul> with class "nav"
-//maybe we should do regex instead but for now we'll let this one stay
-if (window.location.href ==='https://cses.fi/problemset/list' ||
-   window.location.href ==='https://cses.fi/problemset/list/' ||
-   window.location.href ==='https://cses.fi/problemset/' ||
-   window.location.href ==='https://cses.fi/problemset' 
-){
-  console.log(window.location.href);
-  const targetUl = document.querySelector('ul.nav');
-if (targetUl) {
-  console.log("Target <ul>.nav found, injecting React button.");
-
-  const listItem = document.createElement('li');
-  listItem.id = 'item-finder-root'; // Give it a unique ID for React to mount to
-
-  targetUl.appendChild(listItem);
-
-  const root = createRoot(listItem);
-  root.render(
-    <React.StrictMode>
-      <SearchButton />
-    </React.StrictMode>
-  );
-} 
-setTimeout(() => {
-    const h2Elements = document.querySelectorAll('h2');
-    
-    h2Elements.forEach((h2, index) => {
-      if (index !== 0) {
-        // Find the next task-list element after this h2
-        let nextElement = h2.nextElementSibling;
-        let taskList: Element | null = null;
-        
-        // Search for the ul.task-list that follows this h2
-        while (nextElement) {
-          if (nextElement.classList.contains('task-list')) {
-            taskList = nextElement;
-            break;
-          }
-          nextElement = nextElement.nextElementSibling;
-        }
-
-        if (taskList) {
-          // Make the h2 position relative so absolute positioning works inside it
-          (h2 as HTMLElement).style.position = 'relative';
-          
-          // Get the width of the task list to match it
-          const taskListWidth = (taskList as HTMLElement).offsetWidth;
-          (h2 as HTMLElement).style.width = `${taskListWidth}px`;
-          
-          // Create a span container for the SortButton
-          const sortContainer = document.createElement('span');
-          sortContainer.id = `category-sort-${index}`;
-          sortContainer.style.display = 'inline-block';
-          
-          // Append sort button to the h2 element
-          h2.appendChild(sortContainer);
-
-          // Render the SortButton
-          const sortRoot = createRoot(sortContainer);
-          sortRoot.render(
-            <React.StrictMode>
-              <SortButton taskListElement={taskList} />
-            </React.StrictMode>
-          );
-          
-          // Create a span container for the CategoryStatsButton
-          const statsContainer = document.createElement('span');
-          statsContainer.id = `category-stats-${index}`;
-          
-          // Append stats to the h2 element
-          h2.appendChild(statsContainer);
-
-          // Render the CategoryStatsButton
-          const statsRoot = createRoot(statsContainer);
-          statsRoot.render(
-            <React.StrictMode>
-              <CategoryStatsButton taskListElement={taskList} />
-            </React.StrictMode>
-          );
-        }
-      }
-    });
-  }, 500);
-}
-
-//logic for copy button 
-if (window.location.href.startsWith('https://cses.fi/problemset/task/')) {
-  let allps= document.getElementsByTagName('p');
-  for (const curr of allps){
-    if (curr.innerText === 'Input:' || 
-      curr.innerText === 'Output:'){
-        curr.style.display= 'inline-block';
+/**
+ * Fetches settings from chrome.storage.local and applies default values.
+ * @returns A promise that resolves with the complete settings object.
+ */
+async function getSettings(): Promise<Settings> {
+  if (chrome.storage && chrome.storage.local) {
+    try {
+      const items = await chrome.storage.local.get(SETTING_KEYS);
+      
+      // Map the retrieved items, applying fallbacks (coalescing operator `??`)
+      return {
+        tagsEnabled: items.tagsEnabled ?? DEFAULT_SETTINGS.tagsEnabled,
+        hintsEnabled: items.hintsEnabled ?? DEFAULT_SETTINGS.hintsEnabled,
+        globalStatsEnabled: items.globalStatsEnabled ?? DEFAULT_SETTINGS.globalStatsEnabled,
+        categoryStatsEnabled: items.categoryStatsEnabled ?? DEFAULT_SETTINGS.categoryStatsEnabled,
+        sortEnabled: items.sortEnabled ?? DEFAULT_SETTINGS.sortEnabled,
+        autoLoginEnabled: items.autoLoginEnabled ?? DEFAULT_SETTINGS.autoLoginEnabled,
+        autoModeEnabled: items.autoModeEnabled ?? DEFAULT_SETTINGS.autoModeEnabled,
+        submitByTextEnabled: items.submitByTextEnabled ?? DEFAULT_SETTINGS.submitByTextEnabled,
+        // For strings, use `|| ''` or `|| DEFAULT_SETTINGS.username` if you want to explicitly handle empty string vs undefined
+        username: items.username || DEFAULT_SETTINGS.username, 
+        pwd: items.pwd || DEFAULT_SETTINGS.pwd, 
+        mode: items.mode || DEFAULT_SETTINGS.mode,
+      };
+    } catch (error) {
+      console.error("Error retrieving settings from storage, using defaults:", error);
+      return DEFAULT_SETTINGS;
     }
   }
-  document.querySelectorAll('pre').forEach((pre) => {
-    const btn = document.createElement('button');
-
-    btn.textContent = 'copy';
-    btn.style.padding = '0.3em 0.6em';
-    btn.style.width = 'fit-content';
-    btn.style.fontSize = '0.8em';
-    btn.style.height='fit-content';
-
-    btn.addEventListener('click', () => {
-      navigator.clipboard.writeText(pre.innerText)
-        .then(() => {
-          btn.textContent = 'copied!';
-          setTimeout(() => btn.textContent = 'copy', 2500);
-        })
-        .catch(err => {console.error('copy failed:', err); alert("error: "+err);});
-    });
-
-    pre.insertAdjacentElement('beforebegin', btn);
-  });
-
+  return DEFAULT_SETTINGS;
 }
 
-// logic for submit via text
-if (window.location.href.startsWith('https://cses.fi/problemset/submit/')) {
-  // Find the form
-  setupTextBoxSubmission();
-}
-//logic for copying code
-if (window.location.href.startsWith('https://cses.fi/problemset/result')){
-  const codeText = document.querySelector("pre")!.innerText;
+/**
+ * Main logic function, executes after settings are loaded.
+ */
+async function main() {
+  const settings = await getSettings();
   
+  let need = true; // Flag to check if we should try to navigate to login
+
+  // --- Auto Login and Dark Mode Logic ---
+
+  if (currUrl === loginUrl) {
+    console.log("We are on the login page.");
+    need = false;
+
+    // Auto Dark Mode
+    if (settings.autoModeEnabled && settings.mode === 'd' && document.body.style.backgroundColor.toString() !== darkcolor) {
+      const modebtn = document.querySelector('a[href="/darkmode"]');
+      if (modebtn) {
+        (modebtn as HTMLAnchorElement).click();
+        console.log("Clicked dark mode button.");
+      }
+    }
+
+    // Auto Login
+    if (settings.autoLoginEnabled && settings.username && settings.pwd) {
+      console.log("Attempting auto-login.");
+      const usernameInput = document.getElementById('nick');
+      const pwdInput = document.querySelector('input[name="pass"]');
+
+      if (usernameInput && pwdInput && 'value' in usernameInput && 'value' in pwdInput) {
+        (usernameInput as HTMLInputElement).value = settings.username;
+        (pwdInput as HTMLInputElement).value = settings.pwd;
+
+        const submitbtn = document.querySelector('input[type="submit"]');
+
+        if (submitbtn && 'click' in submitbtn) {
+          (submitbtn as HTMLElement).click();
+          console.log("Submitted credentials for auto-login.");
+        }
+      }
+    }
+  }
+
+  // --- Auto Navigate to Login ---
+  
+  const login = document.querySelector('a[href="/login"]');
+  // Check if we haven't handled login on the login page, the button exists, and it says 'Login'
+  if (need && login && login.innerHTML === 'Login' && 'click' in login) {
+    console.log("Not logged in, navigating to login page.");
+    need = false;
+    // Only auto-click if auto-login is enabled, otherwise, let the user manually click.
+    if (settings.autoLoginEnabled) { 
+        (login as HTMLElement).click();
+        console.log("Redirected to login page for auto-login.");
+    }
+  }
+
+  // --- Problemset List Enhancements (Search, Sort, Category Stats) ---
+
+  const isProblemsetList = currUrl === 'https://cses.fi/problemset/list' ||
+    currUrl === 'https://cses.fi/problemset/list/' ||
+    currUrl === 'https://cses.fi/problemset/' ||
+    currUrl === 'https://cses.fi/problemset';
+
+  if (isProblemsetList) {
+    console.log(`On problemset list page. Settings: tagsEnabled=${settings.tagsEnabled}, sortEnabled=${settings.sortEnabled}, categoryStatsEnabled=${settings.categoryStatsEnabled}.`);
+    
+    // Inject Search Button (TagsEnabled)
+    if (settings.globalStatsEnabled) {
+      const targetUl = document.querySelector('ul.nav');
+      if (targetUl) {
+        const listItem = document.createElement('li');
+        listItem.id = 'item-finder-root';
+        targetUl.appendChild(listItem);
+        const root = createRoot(listItem);
+        root.render(
+          <React.StrictMode>
+            <SearchButton />
+          </React.StrictMode>
+        );
+      }
+    }
+    
+    // Inject Category Stats and Sort Buttons
+    if (settings.categoryStatsEnabled || settings.sortEnabled) {
+      // Use a timeout to ensure all DOM elements are fully rendered/settled
+      setTimeout(() => {
+        const h2Elements = document.querySelectorAll('h2');
+
+        h2Elements.forEach((h2, index) => {
+          if (index !== 0) {
+            let nextElement = h2.nextElementSibling;
+            let taskList: Element | null = null;
+
+            while (nextElement) {
+              if (nextElement.classList.contains('task-list')) {
+                taskList = nextElement;
+                break;
+              }
+              nextElement = nextElement.nextElementSibling;
+            }
+
+            if (taskList) {
+              (h2 as HTMLElement).style.position = 'relative';
+              const taskListWidth = (taskList as HTMLElement).offsetWidth;
+              (h2 as HTMLElement).style.width = `${taskListWidth}px`;
+
+              // Sort Button Logic
+              if (settings.sortEnabled) {
+                const sortContainer = document.createElement('span');
+                sortContainer.id = `category-sort-${index}`;
+                sortContainer.style.display = 'inline-block';
+                h2.appendChild(sortContainer);
+                const sortRoot = createRoot(sortContainer);
+                sortRoot.render(
+                  <React.StrictMode>
+                    <SortButton taskListElement={taskList} />
+                  </React.StrictMode>
+                );
+              }
+
+              // Category Stats Button Logic
+              if (settings.categoryStatsEnabled) {
+                const statsContainer = document.createElement('span');
+                statsContainer.id = `category-stats-${index}`;
+                h2.appendChild(statsContainer);
+                const statsRoot = createRoot(statsContainer);
+                statsRoot.render(
+                  <React.StrictMode>
+                    <CategoryStatsButton taskListElement={taskList} />
+                  </React.StrictMode>
+                );
+              }
+            }
+          }
+        });
+      }, 500);
+    }
+  }
+
+  // --- Copy Button Logic on Problem/Task Page ---
+
+  if (currUrl.startsWith('https://cses.fi/problemset/task/')) {
+    // Styling for 'Input:' / 'Output:' headings
+    let allps = document.getElementsByTagName('p');
+    for (const curr of allps) {
+      if (curr.innerText === 'Input:' || curr.innerText === 'Output:') {
+        curr.style.display = 'inline-block';
+      }
+    }
+
+    // Add Copy buttons to <pre> tags
+    document.querySelectorAll('pre').forEach((pre) => {
+      const btn = document.createElement('button');
+      btn.textContent = 'copy';
+      btn.style.padding = '0.3em 0.6em';
+      btn.style.width = 'fit-content';
+      btn.style.fontSize = '0.8em';
+      btn.style.height = 'fit-content';
+
+      btn.addEventListener('click', () => {
+        navigator.clipboard.writeText(pre.innerText)
+          .then(() => {
+            btn.textContent = 'copied!';
+            setTimeout(() => btn.textContent = 'copy', 2500);
+          })
+          .catch(err => { console.error('copy failed:', err); alert("error: " + err); });
+      });
+
+      pre.insertAdjacentElement('beforebegin', btn);
+    });
+  }
+
+  // --- Submit via Text Logic ---
+  if (currUrl.startsWith('https://cses.fi/problemset/submit/')) {
+    if (settings.submitByTextEnabled) {
+        console.log("Setting up text box submission.");
+        setupTextBoxSubmission();
+    }
+  }
+  
+  // --- Copy Code from Result Page Logic ---
+  if (currUrl.startsWith('https://cses.fi/problemset/result')) {
+    const codePre = document.querySelector("pre");
     const header = document.querySelector("h3.caption.close-trigger");
+
+    if (codePre && header) {
+        const codeText = codePre.innerText;
         const btn = document.createElement("button");
         btn.textContent = 'copy';
         btn.style.padding = '0.3em 0.6em';
-        btn.style.margin= '0.3em 0.6em';
+        btn.style.margin = '0.3em 0.6em';
         btn.style.width = 'fit-content';
         btn.style.fontSize = '0.8em';
-        btn.style.height='fit-content';
+        btn.style.height = 'fit-content';
+
         btn.addEventListener("click", () => {
- 
-            if (codeText) {
-                navigator.clipboard.writeText(codeText).then(() => {
-                    btn.textContent = "copied!";
-                    setTimeout(() => btn.textContent = "copy", 1500);
-                }).catch(err => {
-                    console.error("Failed to copy text: ", err);
-                });
-            }
+            navigator.clipboard.writeText(codeText).then(() => {
+                btn.textContent = "copied!";
+                setTimeout(() => btn.textContent = "copy", 1500);
+            }).catch(err => {
+                console.error("Failed to copy text: ", err);
+            });
         });
 
         // Insert the button after the header
-        header!.appendChild(btn);
-    
-
-
-
+        header.appendChild(btn);
+    }
   }
+}
+
+
+main();

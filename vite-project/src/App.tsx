@@ -13,6 +13,7 @@ interface Settings {
   username: string;
   password: string;
   mode: 'd' | 'l';
+  
 }
 
 // Main App Component
