@@ -3,7 +3,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
 import SearchButton from './SearchButton.tsx';
-
+import { setupTextBoxSubmission } from './submitTextBox';
 console.log("item Finder Content Script Loaded!");
 console.log("finding if we have logged in or not?")
 
@@ -111,3 +111,40 @@ if (window.location.href.startsWith('https://cses.fi/problemset/task/')) {
   });
 
 }
+
+// logic for submit via text
+if (window.location.href.startsWith('https://cses.fi/problemset/submit/')) {
+  // Find the form
+  setupTextBoxSubmission();
+}
+//logic for copying code
+if (window.location.href.startsWith('https://cses.fi/problemset/result')){
+  const codeText = document.querySelector("pre")!.innerText;
+  
+    const header = document.querySelector("h3.caption.close-trigger");
+        const btn = document.createElement("button");
+        btn.textContent = 'copy';
+        btn.style.padding = '0.3em 0.6em';
+        btn.style.margin= '0.3em 0.6em';
+        btn.style.width = 'fit-content';
+        btn.style.fontSize = '0.8em';
+        btn.style.height='fit-content';
+        btn.addEventListener("click", () => {
+ 
+            if (codeText) {
+                navigator.clipboard.writeText(codeText).then(() => {
+                    btn.textContent = "copied!";
+                    setTimeout(() => btn.textContent = "copy", 1500);
+                }).catch(err => {
+                    console.error("Failed to copy text: ", err);
+                });
+            }
+        });
+
+        // Insert the button after the header
+        header!.appendChild(btn);
+    
+
+
+
+  }
