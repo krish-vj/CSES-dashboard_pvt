@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 // Define the structure of your settings
 interface Settings {
   tagsEnabled: boolean;
+  timeEnabled: boolean;
   hintsEnabled: boolean;
   globalStatsEnabled: boolean;
   categoryStatsEnabled: boolean;
@@ -14,6 +15,7 @@ interface Settings {
   password: string;
   mode: 'd' | 'l';
   
+  
 }
 
 // Main App Component
@@ -21,6 +23,7 @@ function App() {
   // State for all settings, initialized with defaults
   const [settings, setSettings] = useState<Settings>({
     tagsEnabled: true,
+    timeEnabled: true,
     hintsEnabled: true,
     globalStatsEnabled: true,
     categoryStatsEnabled: true,
@@ -30,7 +33,8 @@ function App() {
     submitByTextEnabled: true,
     username: '',
     password: '',
-    mode: 'd'
+    mode: 'd',
+    
   });
 
   // State to control the visibility of the login form
@@ -49,13 +53,14 @@ function App() {
     // Check if chrome.storage is available
     if (chrome.storage && chrome.storage.local) {
       const settingKeys = [
-        'tagsEnabled', 'hintsEnabled', 'globalStatsEnabled',
+        'tagsEnabled','timeEnabled', 'hintsEnabled', 'globalStatsEnabled',
         'categoryStatsEnabled', 'sortEnabled', 'autoLoginEnabled',
         'autoModeEnabled', 'submitByTextEnabled', 'username', 'pwd', 'mode'
       ];
       chrome.storage.local.get(settingKeys).then((items) => {
         setSettings({
           tagsEnabled: items.tagsEnabled ?? true,
+          timeEnabled: items.timeEnabled?? true,
           hintsEnabled: items.hintsEnabled ?? true,
           globalStatsEnabled: items.globalStatsEnabled ?? true,
           categoryStatsEnabled: items.categoryStatsEnabled ?? true,
@@ -65,7 +70,8 @@ function App() {
           submitByTextEnabled: items.submitByTextEnabled ?? true,
           username: items.username || '',
           password: items.pwd || '',
-          mode: items.mode || 'd'
+          mode: items.mode || 'd',
+          
         });
       });
     }
@@ -160,20 +166,7 @@ function App() {
             {message}
           </div>
         )}
-
-        {/* Features Section */}
-        <div style={{ background: '#242424', borderRadius: '12px', padding: '24px', marginBottom: '24px' }}>
-          <h2 style={{ fontSize: '18px', fontWeight: '500', marginBottom: '20px', color: '#ffffff' }}>
-            Features
-          </h2>
-          <ToggleItem label="Tags Display" description="Show problem tags" checked={settings.tagsEnabled} onChange={() => handleToggle('tagsEnabled')} />
-          <ToggleItem label="Hints Display" description="Show problem hints" checked={settings.hintsEnabled} onChange={() => handleToggle('hintsEnabled')} />
-          <ToggleItem label="Global MyStats" description="Display global statistics in navigation bar" checked={settings.globalStatsEnabled} onChange={() => handleToggle('globalStatsEnabled')} />
-          <ToggleItem label="Category Stats" description="Show statistics for each problem category" checked={settings.categoryStatsEnabled} onChange={() => handleToggle('categoryStatsEnabled')} />
-          <ToggleItem label="Sort Button" description="Enable sorting problems by solvers/acceptance rate" checked={settings.sortEnabled} onChange={() => handleToggle('sortEnabled')} />
-          <ToggleItem label="Submit by Text" description="Enable text-based code submission" checked={settings.submitByTextEnabled} onChange={() => handleToggle('submitByTextEnabled')} isLast />
-        </div>
-
+        
         {/* Automation Section */}
         <div style={{ background: '#242424', borderRadius: '12px', padding: '24px', marginBottom: '24px' }}>
           <h2 style={{ fontSize: '18px', fontWeight: '500', marginBottom: '20px', color: '#ffffff' }}>
@@ -222,6 +215,21 @@ function App() {
               )}
             </div>
           )}
+        </div>
+
+
+        {/* Features Section */}
+        <div style={{ background: '#242424', borderRadius: '12px', padding: '24px', marginBottom: '24px' }}>
+          <h2 style={{ fontSize: '18px', fontWeight: '500', marginBottom: '20px', color: '#ffffff' }}>
+            Features
+          </h2>
+          <ToggleItem label="Time Complexity" description="Show expected time complexity for tasks" checked={settings.timeEnabled} onChange={() => handleToggle('timeEnabled')} />
+          <ToggleItem label="Tags Display" description="Show problem tags" checked={settings.tagsEnabled} onChange={() => handleToggle('tagsEnabled')} />
+          <ToggleItem label="Hints Display" description="Show problem hints" checked={settings.hintsEnabled} onChange={() => handleToggle('hintsEnabled')} />
+          <ToggleItem label="Global MyStats" description="Display global statistics in navigation bar" checked={settings.globalStatsEnabled} onChange={() => handleToggle('globalStatsEnabled')} />
+          <ToggleItem label="Category Stats" description="Show statistics for each problem category" checked={settings.categoryStatsEnabled} onChange={() => handleToggle('categoryStatsEnabled')} />
+          <ToggleItem label="Sort Button" description="Enable sorting problems by solvers/acceptance rate" checked={settings.sortEnabled} onChange={() => handleToggle('sortEnabled')} />
+          <ToggleItem label="Submit by Text" description="Enable text-based code submission" checked={settings.submitByTextEnabled} onChange={() => handleToggle('submitByTextEnabled')} isLast />
         </div>
 
         {/* Footer/Contact Section */}

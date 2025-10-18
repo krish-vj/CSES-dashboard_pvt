@@ -10,6 +10,7 @@ import SortButton from './SortButton.tsx';
 // Define the shape of your settings for clarity and type safety
 interface Settings {
   tagsEnabled: boolean;
+  timeEnabled: boolean;
   hintsEnabled: boolean;
   globalStatsEnabled: boolean;
   categoryStatsEnabled: boolean;
@@ -20,6 +21,7 @@ interface Settings {
   username: string;
   pwd: string;
   mode: string;
+  
 }
 
 const currUrl = window.location.href;
@@ -29,6 +31,7 @@ const darkcolor = '#181818';
 // Default settings based on your initial storage setup, for fallback
 const DEFAULT_SETTINGS: Settings = {
   tagsEnabled: true,
+  timeEnabled: true,
   hintsEnabled: true,
   globalStatsEnabled: true,
   categoryStatsEnabled: true,
@@ -39,6 +42,7 @@ const DEFAULT_SETTINGS: Settings = {
   username: '',
   pwd: '',
   mode: 'd',
+  
 };
 
 // Keys to fetch from storage
@@ -56,6 +60,7 @@ async function getSettings(): Promise<Settings> {
       // Map the retrieved items, applying fallbacks (coalescing operator `??`)
       return {
         tagsEnabled: items.tagsEnabled ?? DEFAULT_SETTINGS.tagsEnabled,
+        timeEnabled: items.timeEnabled ?? DEFAULT_SETTINGS.timeEnabled,
         hintsEnabled: items.hintsEnabled ?? DEFAULT_SETTINGS.hintsEnabled,
         globalStatsEnabled: items.globalStatsEnabled ?? DEFAULT_SETTINGS.globalStatsEnabled,
         categoryStatsEnabled: items.categoryStatsEnabled ?? DEFAULT_SETTINGS.categoryStatsEnabled,
@@ -67,6 +72,7 @@ async function getSettings(): Promise<Settings> {
         username: items.username || DEFAULT_SETTINGS.username, 
         pwd: items.pwd || DEFAULT_SETTINGS.pwd, 
         mode: items.mode || DEFAULT_SETTINGS.mode,
+       
       };
     } catch (error) {
       console.error("Error retrieving settings from storage, using defaults:", error);
@@ -215,7 +221,52 @@ async function main() {
       }, 500);
     }
   }
+  if (settings.tagsEnabled && currUrl.startsWith('https://cses.fi/problemset/') ){
+    let sidebar= document.querySelector('div.nav.sidebar');
+    if (sidebar){
+      let tags=document.createElement('h4');
+      let child= document.createElement('div');
+      child.innerText='Will upload tags if there is suffiecient demand.'
+      tags.innerText='Tags';
+      const hr= document.createElement('hr');
+      sidebar.appendChild(hr);
+      sidebar.appendChild(tags);
+      sidebar.appendChild(child);
 
+      
+    }
+  }
+  
+  if (settings.hintsEnabled && currUrl.startsWith('https://cses.fi/problemset/')){
+    let sidebar= document.querySelector('div.nav.sidebar');
+        if (sidebar){
+      let hints=document.createElement('h4');
+      let child= document.createElement('div');
+      child.innerText='Will upload hints if there is suffiecient demand.'
+      hints.innerText='Hints';
+      const hr= document.createElement('hr');
+      sidebar.appendChild(hr);
+      sidebar.appendChild(hints);
+      sidebar.appendChild(child);
+
+      
+    }
+
+  }
+    if (settings.timeEnabled && currUrl.startsWith('https://cses.fi/problemset/')){
+    let sidebar= document.querySelector('div.nav.sidebar');
+        if (sidebar){
+      let hints=document.createElement('h4');
+      let child= document.createElement('div');
+      child.innerText='Will upload time complexity if there is suffiecient demand.'
+      hints.innerText='Time Complexity';
+      const hr= document.createElement('hr');
+      sidebar.appendChild(hr);
+      sidebar.appendChild(hints);
+      sidebar.appendChild(child); 
+    }
+
+  }
   // --- Copy Button Logic on Problem/Task Page ---
 
   if (currUrl.startsWith('https://cses.fi/problemset/task/')) {
