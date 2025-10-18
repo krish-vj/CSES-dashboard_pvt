@@ -1,0 +1,8 @@
+{"10": {
+    "tags": ["graph-theory", "shortest-path", "basic-math"],
+    "time": ["O(n+m)log(n)"],
+    "hints": ["Dijkstra's Algorithm", "priority-queue"]
+
+
+
+}}

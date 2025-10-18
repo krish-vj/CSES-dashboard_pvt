@@ -23,10 +23,59 @@ interface Settings {
   mode: string;
   
 }
+function extractProblemId(url: string) {
+    const match = url.match(/\/(\d+)\/?$/);
+    return match ? match[1] : null;
+}
+function createCollapsibleSection(title: string, items: string[]) {
+  const section = document.createElement('div');
+  section.style.marginTop = '10px';
 
+  const header = document.createElement('h4');
+  header.style.display = 'flex';
+  header.style.alignItems = 'center';
+  header.style.cursor = 'pointer';
+  header.innerHTML = `${title} <span style="margin-left:5px;">▼</span>`;
+
+  const content = document.createElement('div');
+  content.style.display = 'none';
+  content.style.marginLeft = '10px';
+
+  if (Array.isArray(items)) {
+    content.innerHTML = items.map(x => `<div>• ${x}</div>`).join('');
+  } else {
+    content.innerText = items;
+  }
+
+  // Toggle visibility on click
+  header.addEventListener('click', () => {
+    const isVisible = content.style.display === 'block';
+    content.style.display = isVisible ? 'none' : 'block';
+    header.querySelector('span')!.textContent = isVisible ? '▼' : '▲';
+  });
+
+  const hr = document.createElement('hr');
+  section.appendChild(hr);
+  section.appendChild(header);
+  section.appendChild(content);
+
+  return section;
+}
+interface ProblemInfo {
+  tags?: string[];
+  time?: string[];
+  hints?: string[];
+}
+const problemData: Record<string, ProblemInfo> = {
+  "1671": {
+    tags: ["graph-theory", "shortest-path", "basic-math"],
+    time: ["O((n+m)log(n))"],
+    hints: ["Use Dijkstra's Algorithm", "Implement with a priority queue"]
+  }
+};
 const currUrl = window.location.href;
 const loginUrl = 'https://cses.fi/login';
-const darkcolor = '#181818';
+
 
 // Default settings based on your initial storage setup, for fallback
 const DEFAULT_SETTINGS: Settings = {
@@ -97,13 +146,7 @@ async function main() {
     need = false;
 
     // Auto Dark Mode
-    if (settings.autoModeEnabled && settings.mode === 'd' && document.body.style.backgroundColor.toString() !== darkcolor) {
-      const modebtn = document.querySelector('a[href="/darkmode"]');
-      if (modebtn) {
-        (modebtn as HTMLAnchorElement).click();
-        console.log("Clicked dark mode button.");
-      }
-    }
+
 
     // Auto Login
     if (settings.autoLoginEnabled && settings.username && settings.pwd) {
@@ -123,6 +166,7 @@ async function main() {
         }
       }
     }
+
   }
 
   // --- Auto Navigate to Login ---
@@ -139,6 +183,31 @@ async function main() {
     }
   }
 
+if (settings.autoModeEnabled) {
+    // CSES dark mode color #181818 is rgb(24, 24, 24)
+    const darkColorRgb = 'rgb(24, 24, 24)';
+    
+    // Get the *actual* rendered background color using window.getComputedStyle
+    const currentBgColor = window.getComputedStyle(document.body).backgroundColor;
+    
+    // Check the actual rendered color
+    const isCurrentlyDark = currentBgColor === darkColorRgb;
+    const isDesiredDark = settings.mode === 'd';
+
+    // console.log(`AutoMode: Desired dark? ${isDesiredDark}, Currently dark? ${isCurrentlyDark} (color: ${currentBgColor})`);
+
+    // If the desired state and current state don't match, click the button
+    if (isDesiredDark !== isCurrentlyDark) {
+        const modebtn = document.querySelector('a[href="/darkmode"]');
+        if (modebtn) {
+            console.log("AutoMode: Mismatch detected, clicking mode switch button.");
+            (modebtn as HTMLAnchorElement).click();
+        } else {
+            console.log("AutoMode: Mismatch detected, but couldn't find mode switch button.");
+        }
+    }
+}
+
   // --- Problemset List Enhancements (Search, Sort, Category Stats) ---
 
   const isProblemsetList = currUrl === 'https://cses.fi/problemset/list' ||
@@ -149,7 +218,7 @@ async function main() {
   if (isProblemsetList) {
     console.log(`On problemset list page. Settings: tagsEnabled=${settings.tagsEnabled}, sortEnabled=${settings.sortEnabled}, categoryStatsEnabled=${settings.categoryStatsEnabled}.`);
     
-    // Inject Search Button (TagsEnabled)
+    
     if (settings.globalStatsEnabled) {
       const targetUl = document.querySelector('ul.nav');
       if (targetUl) {
@@ -221,52 +290,83 @@ async function main() {
       }, 500);
     }
   }
-  if (settings.tagsEnabled && currUrl.startsWith('https://cses.fi/problemset/') ){
-    let sidebar= document.querySelector('div.nav.sidebar');
-    if (sidebar){
-      let tags=document.createElement('h4');
-      let child= document.createElement('div');
-      child.innerText='Will upload tags if there is suffiecient demand.'
-      tags.innerText='Tags';
-      const hr= document.createElement('hr');
-      sidebar.appendChild(hr);
-      sidebar.appendChild(tags);
-      sidebar.appendChild(child);
+  const problemId=extractProblemId(currUrl);
+  if (currUrl.startsWith('https://cses.fi/problemset/') && problemId) {
+  const sidebar = document.querySelector('div.nav.sidebar');
+  if (sidebar) {
+    const data = problemData[problemId] || {};
 
-      
+    // TAGS
+    if (settings.tagsEnabled) {
+      let section;
+      if (data.tags) section = createCollapsibleSection('Tags', data.tags);
+      else section = createCollapsibleSection('Tags', ['Will upload tags if there is sufficient demand.']);
+      sidebar.appendChild(section);
+    }
+
+    // HINTS
+    if (settings.hintsEnabled) {
+      let section;
+      if (data.hints) section = createCollapsibleSection('Hints', data.hints);
+      else section = createCollapsibleSection('Hints', ['Will upload hints if there is sufficient demand.']);
+      sidebar.appendChild(section);
+    }
+
+    // TIME COMPLEXITY
+    if (settings.timeEnabled) {
+      let section;
+      if (data.time) section = createCollapsibleSection('Time Complexity', data.time);
+      else section = createCollapsibleSection('Time Complexity', ['Will upload time complexity if there is sufficient demand.']);
+      sidebar.appendChild(section);
     }
   }
+}
+  // if (settings.tagsEnabled && currUrl.startsWith('https://cses.fi/problemset/') ){
+  //   let sidebar= document.querySelector('div.nav.sidebar');
+  //   if (sidebar){
+  //     let tags=document.createElement('h4');
+  //     let child= document.createElement('div');
+  //     child.innerText='Will upload tags if there is suffiecient demand.'
+  //     tags.innerText='Tags';
+  //     const hr= document.createElement('hr');
+  //     sidebar.appendChild(hr);
+  //     sidebar.appendChild(tags);
+  //     sidebar.appendChild(child);
+
+      
+  //   }
+  // }
   
-  if (settings.hintsEnabled && currUrl.startsWith('https://cses.fi/problemset/')){
-    let sidebar= document.querySelector('div.nav.sidebar');
-        if (sidebar){
-      let hints=document.createElement('h4');
-      let child= document.createElement('div');
-      child.innerText='Will upload hints if there is suffiecient demand.'
-      hints.innerText='Hints';
-      const hr= document.createElement('hr');
-      sidebar.appendChild(hr);
-      sidebar.appendChild(hints);
-      sidebar.appendChild(child);
+  // if (settings.hintsEnabled && currUrl.startsWith('https://cses.fi/problemset/')){
+  //   let sidebar= document.querySelector('div.nav.sidebar');
+  //       if (sidebar){
+  //     let hints=document.createElement('h4');
+  //     let child= document.createElement('div');
+  //     child.innerText='Will upload hints if there is suffiecient demand.'
+  //     hints.innerText='Hints';
+  //     const hr= document.createElement('hr');
+  //     sidebar.appendChild(hr);
+  //     sidebar.appendChild(hints);
+  //     sidebar.appendChild(child);
 
       
-    }
+  //   }
 
-  }
-    if (settings.timeEnabled && currUrl.startsWith('https://cses.fi/problemset/')){
-    let sidebar= document.querySelector('div.nav.sidebar');
-        if (sidebar){
-      let hints=document.createElement('h4');
-      let child= document.createElement('div');
-      child.innerText='Will upload time complexity if there is suffiecient demand.'
-      hints.innerText='Time Complexity';
-      const hr= document.createElement('hr');
-      sidebar.appendChild(hr);
-      sidebar.appendChild(hints);
-      sidebar.appendChild(child); 
-    }
+  // }
+  //   if (settings.timeEnabled && currUrl.startsWith('https://cses.fi/problemset/')){
+  //   let sidebar= document.querySelector('div.nav.sidebar');
+  //       if (sidebar){
+  //     let hints=document.createElement('h4');
+  //     let child= document.createElement('div');
+  //     child.innerText='Will upload time complexity if there is suffiecient demand.'
+  //     hints.innerText='Time Complexity';
+  //     const hr= document.createElement('hr');
+  //     sidebar.appendChild(hr);
+  //     sidebar.appendChild(hints);
+  //     sidebar.appendChild(child); 
+  //   }
 
-  }
+  // }
   // --- Copy Button Logic on Problem/Task Page ---
 
   if (currUrl.startsWith('https://cses.fi/problemset/task/')) {
