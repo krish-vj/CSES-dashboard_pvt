@@ -1,4 +1,3 @@
-// src/content-script/SearchButton.tsx
 
 import React, { useState } from 'react';
 

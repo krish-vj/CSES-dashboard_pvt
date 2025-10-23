@@ -1,4 +1,3 @@
-// src/content-script/main.tsx
 
 import React from 'react';
 import { createRoot } from 'react-dom/client';
@@ -233,7 +232,7 @@ async function main() {
   // --- Auto Login and Dark Mode Logic ---
 
   if (currUrl === loginUrl) {
-    console.log("We are on the login page.");
+    // //console.log("We are on the login page.");
     need = false;
 
     // Auto Dark Mode
@@ -241,7 +240,7 @@ async function main() {
 
     // Auto Login
     if (settings.autoLoginEnabled && settings.username && settings.pwd) {
-      console.log("Attempting auto-login.");
+      // //console.log("Attempting auto-login.");
       const usernameInput = document.getElementById('nick');
       const pwdInput = document.querySelector('input[name="pass"]');
 
@@ -253,7 +252,7 @@ async function main() {
 
         if (submitbtn && 'click' in submitbtn) {
           (submitbtn as HTMLElement).click();
-          console.log("Submitted credentials for auto-login.");
+          // //console.log("Submitted credentials for auto-login.");
         }
       }
     }
@@ -265,12 +264,12 @@ async function main() {
   const login = document.querySelector('a[href="/login"]');
   // Check if we haven't handled login on the login page, the button exists, and it says 'Login'
   if (need && login && login.innerHTML === 'Login' && 'click' in login) {
-    console.log("Not logged in, navigating to login page.");
+    //console.log("Not logged in, navigating to login page.");
     need = false;
     // Only auto-click if auto-login is enabled, otherwise, let the user manually click.
     if (settings.autoLoginEnabled) { 
         (login as HTMLElement).click();
-        console.log("Redirected to login page for auto-login.");
+        //console.log("Redirected to login page for auto-login.");
     }
   }
 
@@ -282,13 +281,13 @@ if (settings.autoModeEnabled) {
     const isCurrentlyDark = currentBgColor === darkColorRgb;
     const isDesiredDark = settings.mode === 'd';
 
-    // console.log(`AutoMode: Desired dark? ${isDesiredDark}, Currently dark? ${isCurrentlyDark} (color: ${currentBgColor})`);
+    // //console.log(`AutoMode: Desired dark? ${isDesiredDark}, Currently dark? ${isCurrentlyDark} (color: ${currentBgColor})`);
 
     // If the desired state and current state don't match, click the button
     if (isDesiredDark !== isCurrentlyDark) {
         const modebtn = document.querySelector('a[href="/darkmode"]');
         if (modebtn) {
-            console.log("AutoMode: Mismatch detected, clicking mode switch button.");
+            //console.log("AutoMode: Mismatch detected, clicking mode switch button.");
             (modebtn as HTMLAnchorElement).click();
         } else {
             console.log("AutoMode: Mismatch detected, but couldn't find mode switch button.");
@@ -304,7 +303,7 @@ if (settings.autoModeEnabled) {
     currUrl === 'https://cses.fi/problemset';
 
   if (isProblemsetList) {
-    console.log(`On problemset list page. Settings: tagsEnabled=${settings.tagsEnabled}, sortEnabled=${settings.sortEnabled}, categoryStatsEnabled=${settings.categoryStatsEnabled}.`);
+    //console.log(`On problemset list page. Settings: tagsEnabled=${settings.tagsEnabled}, sortEnabled=${settings.sortEnabled}, categoryStatsEnabled=${settings.categoryStatsEnabled}.`);
     
     
     if (settings.globalStatsEnabled) {
@@ -381,7 +380,7 @@ if (settings.autoModeEnabled) {
             }
           }
         });
-      }, 250);
+      }, 350);
     }
   }
 
@@ -454,7 +453,7 @@ if (settings.autoModeEnabled) {
   // --- Submit via Text Logic ---
   if (currUrl.startsWith('https://cses.fi/problemset/submit/')) {
     if (settings.submitByTextEnabled) {
-        console.log("Setting up text box submission.");
+        //console.log("Setting up text box submission.");
         setupTextBoxSubmission();
     }
   }

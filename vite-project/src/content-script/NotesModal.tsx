@@ -1,4 +1,3 @@
-// src/content-script/NotesModal.tsx
 
 import React, { useState, useEffect } from 'react';
 import { useEditor, EditorContent } from '@tiptap/react';
@@ -180,7 +179,7 @@ color:
               >
                 I
               </button>
-              <button
+              {/* <button
                 onClick={() => editor?.chain().focus().toggleCode().run()}
                 style={{
                   padding: '6px 10px',
@@ -192,7 +191,7 @@ color:
                 }}
               >
                 {'</>'}
-              </button>
+              </button> */}
               <span style={{ width: '1px', backgroundColor: 'rgba(128, 128, 128, 0.3)', margin: '0 5px' }} />
               <button
                 onClick={() => editor?.chain().focus().toggleHeading({ level: 1 }).run()}

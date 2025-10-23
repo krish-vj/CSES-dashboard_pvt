@@ -1,7 +1,8 @@
 {
     "manifest_version": 3,
     "version": "1.0.0",
-    "name": "CSES DASHBOARD",
+    "name": "CSES EXTENSION",
+    "description": "Enhance your CSES experience with notes, tags, stats, and automation tools.",
     "action": {
         "default_popup": "index.html"
     },

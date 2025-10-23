@@ -170,8 +170,8 @@ const SortButton: React.FC<SortButtonProps> = ({ taskListElement }) => {
                 }}
                 
               >
-                <span style={{ fontSize: '16px' }}>#</span>
-                <span>Default Order</span>
+                {/* <span style={{ fontSize: '16px' }}>#</span> */}
+                <span>Default Order #</span>
               </button>
 
               <button
@@ -190,8 +190,7 @@ const SortButton: React.FC<SortButtonProps> = ({ taskListElement }) => {
                 }}
 
               >
-                <span style={{ fontSize: '16px' }}>👥</span>
-                <span>Number of Solvers</span>
+                <span>Number of Solvers 👥</span>
               </button>
 
               <button
@@ -210,8 +209,8 @@ const SortButton: React.FC<SortButtonProps> = ({ taskListElement }) => {
                 }}
 
               >
-                <span style={{ fontSize: '16px' }}>%</span>
-                <span>Acceptance Rate</span>
+                {/* <span style={{ fontSize: '16px' }}>%</span> */}
+                <span>Acceptance Rate %</span>
               </button>
             </div>
           </div>

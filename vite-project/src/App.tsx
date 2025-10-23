@@ -149,10 +149,10 @@ function App() {
         maxWidth: '400px', // Constrained width for the popup
         margin: '0 auto'
       }}>
-        <h1 style={{ fontSize: '28px', fontWeight: '600', marginBottom: '8px', color: '#ffffff' }}>
+        <h1 style={{display: 'flex', justifyContent: 'center', fontSize: '28px', fontWeight: '600', marginBottom: '8px', color: '#ffffff' }}>
           CSES Extension
         </h1>
-        <p style={{ color: '#888', marginBottom: '40px', fontSize: '14px' }}>
+        <p style={{display: 'flex', justifyContent: 'center', color: '#888', marginBottom: '40px', fontSize: '14px' }}>
           Configure your CSES problem set experience
         </p>
 
@@ -169,19 +169,18 @@ function App() {
             {message}
           </div>
         )}
-        <pre>note: you need to refresh
-                   to see the changes</pre>
+        <pre style={{display: 'flex', justifyContent: 'center'}}>note: you need to refresh to see the changes</pre>
         
         {/* Automation Section */}
         <div style={{ background: '#242424', borderRadius: '12px', padding: '24px', marginBottom: '24px' }}>
-          <h2 style={{ fontSize: '18px', fontWeight: '500', marginBottom: '20px', color: '#ffffff' }}>
+          <h2 style={{display: 'flex', justifyContent: 'center', fontSize: '18px', fontWeight: '500', marginBottom: '20px', color: '#ffffff' }}>
             Automation
           </h2>
           <ToggleItem label="Auto Login" description="Automatically log in with saved credentials" checked={settings.autoLoginEnabled} onChange={() => handleToggle('autoLoginEnabled')} />
           <ToggleItem label="Auto Theme" description="Automatically switch to preferred theme mode" checked={settings.autoModeEnabled} onChange={() => handleToggle('autoModeEnabled')} isLast />
 
           {(settings.autoLoginEnabled || settings.autoModeEnabled) && (
-            <div style={{ marginTop: '24px' }}>
+            <div style={{ marginTop: '0px' }}>
               {!showLoginForm ? (
                 <button
                   onClick={() => setShowLoginForm(true)}
@@ -190,7 +189,7 @@ function App() {
                   {settings.username ? 'Update Credentials/Theme' : 'Setup Credentials/Theme'}
                 </button>
               ) : (
-                <div style={{ background: '#1a1a1a', border: '1px solid #3a3a3a', borderRadius: '8px', padding: '20px', marginTop: '12px' }}>
+                <div style={{ background: '#1a1a1a', border: '1px solid #3a3a3a', borderRadius: '8px', padding: '20px', marginTop: '0px' }}>
                   <div style={{ marginBottom: '16px' }}>
                     <label style={{ display: 'block', marginBottom: '6px', fontSize: '14px', color: '#b0b0b0' }}>Username</label>
                     <input type="text" value={loginUsername} onChange={(e) => setLoginUsername(e.target.value)} style={{ width: '100%', padding: '8px 12px', background: '#2a2a2a', border: '1px solid #3a3a3a', borderRadius: '6px', color: '#e0e0e0', fontSize: '14px', outline: 'none', boxSizing: 'border-box' }} />
@@ -225,25 +224,98 @@ function App() {
 
         {/* Features Section */}
         <div style={{ background: '#242424', borderRadius: '12px', padding: '24px', marginBottom: '24px' }}>
-          <h2 style={{ fontSize: '18px', fontWeight: '500', marginBottom: '20px', color: '#ffffff' }}>
+          <h2 style={{display: 'flex', justifyContent: 'center', fontSize: '18px', fontWeight: '500', marginBottom: '20px', color: '#ffffff' }}>
             Features
           </h2>
           <ToggleItem label="Notes" description="Save notes corresponding to each problem" checked={settings.notesEnabled} onChange={() => handleToggle('notesEnabled')} />
-          <ToggleItem label="Time Complexity" description="Show expected time complexity for tasks" checked={settings.timeEnabled} onChange={() => handleToggle('timeEnabled')} />
-          <ToggleItem label="Tags Display" description="Show problem tags" checked={settings.tagsEnabled} onChange={() => handleToggle('tagsEnabled')} />
-          <ToggleItem label="Hints Display" description="Show problem hints" checked={settings.hintsEnabled} onChange={() => handleToggle('hintsEnabled')} />
           <ToggleItem label="Global MyStats" description="Display global statistics in navigation bar" checked={settings.globalStatsEnabled} onChange={() => handleToggle('globalStatsEnabled')} />
           <ToggleItem label="Category Stats" description="Show statistics for each problem category" checked={settings.categoryStatsEnabled} onChange={() => handleToggle('categoryStatsEnabled')} />
           <ToggleItem label="Sort Button" description="Enable sorting problems by solvers/acceptance rate" checked={settings.sortEnabled} onChange={() => handleToggle('sortEnabled')} />
-          <ToggleItem label="Submit by Text" description="Enable text-based code submission" checked={settings.submitByTextEnabled} onChange={() => handleToggle('submitByTextEnabled')} isLast />
+          <ToggleItem label="Submit by Text" description="Enable text-based code submission" checked={settings.submitByTextEnabled} onChange={() => handleToggle('submitByTextEnabled')}  />
+          <ToggleItem label="Time Complexity" description="Show expected time complexity for tasks" checked={settings.timeEnabled} onChange={() => handleToggle('timeEnabled')} />
+          <ToggleItem label="Tags Display" description="Show problem tags" checked={settings.tagsEnabled} onChange={() => handleToggle('tagsEnabled')} />
+          <ToggleItem label="Hints Display" description="Show problem hints" checked={settings.hintsEnabled} onChange={() => handleToggle('hintsEnabled')} isLast/>
+          
         </div>
 
         {/* Footer/Contact Section */}
-        <div style={{ textAlign: 'center', padding: '20px 0 0' }}>
-          <a href="mailto:joshikrish533@gmail.com" style={{ display: 'inline-flex', alignItems: 'center', gap: '8px', padding: '10px 20px', background: '#2a2a2a', border: '1px solid #3a3a3a', borderRadius: '8px', color: '#5CAFFF', textDecoration: 'none', fontSize: '14px', transition: 'all 0.2s' }}>
-            <span style={{ fontSize: '18px' }}>✉</span>
+        <div>
+        <div style={{ background: '#242424', borderRadius: '12px', padding: '24px', marginBottom: '24px' }}>
+        <h2 style={{ display: 'flex', justifyContent: 'center',fontSize: '18px', fontWeight: '500', marginBottom: '20px', color: '#ffffff'}}>
             Contact Developer
-          </a>
+          </h2>
+  <div style={{ textAlign: 'center', padding: '0' }}>
+    <div style={{ display: 'flex', justifyContent: 'center', gap: '15px' }}>
+
+      {/* 1. GitHub Link */}
+      <a 
+        href="https://github.com/krish-vj" 
+        target="_blank" 
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '8px',
+          padding: '10px 15px',
+          background: '#2a2a2a',
+          border: '1px solid #3a3a3a',
+          borderRadius: '8px',
+          color: '#ffffff',
+          textDecoration: 'none',
+          fontSize: '14px',
+          transition: 'all 0.2s',
+          // Optional: Add a hover effect for a better feel in a real React component
+          // ':hover': { borderColor: '#5CAFFF' } 
+        }}
+      >
+        <span style={{ fontSize: '18px' }}>&#9733;</span>
+        GitHub
+      </a>
+
+      {/* 2. LinkedIn Link */}
+      <a 
+        href="https://www.linkedin.com/in/krish-vj/" 
+        target="_blank" 
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '8px',
+          padding: '10px 15px',
+          background: '#2a2a2a',
+          border: '1px solid #3a3a3a',
+          borderRadius: '8px',
+          color: '#5CAFFF',
+          textDecoration: 'none',
+          fontSize: '14px',
+          transition: 'all 0.2s',
+        }}
+      >
+        <span style={{ fontSize: '18px' }}>&#x1F517;</span>
+        LinkedIn
+      </a>
+
+      {/* 3. Email Link (Mail) */}
+      <a 
+        href="mailto:joshikrish533@gmail.com" 
+        style={{
+          display: 'inline-flex',
+          alignItems: 'center',
+          gap: '8px',
+          padding: '10px 15px',
+          background: '#2a2a2a',
+          border: '1px solid #3a3a3a',
+          borderRadius: '8px',
+          color: '#ffffff',
+          textDecoration: 'none',
+          fontSize: '14px',
+          transition: 'all 0.2s',
+        }}
+      >
+        <span style={{ fontSize: '18px' }}>✉</span>
+        Email
+      </a>
+    </div>
+  </div>
+</div>
         </div>
       </div>
     </div>
