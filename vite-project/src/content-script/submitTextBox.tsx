@@ -1,7 +1,4 @@
-// Add this to your content script where the submit page logic is
 
-
-// Function to create the text area for code input
 function createCodeInputArea(): void {
   const codeInputArea = document.createElement("textarea");
   codeInputArea.id = "code";

@@ -1,4 +1,3 @@
-// src/content-script/SortButton.tsx
 
 import React, { useState, useRef, useEffect } from 'react';
 
